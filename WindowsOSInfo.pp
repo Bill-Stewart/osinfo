@@ -1,4 +1,4 @@
-{ Copyright (C) 2024 by Bill Stewart (bstewart at iname.com)
+{ Copyright (C) 2024-2026 by Bill Stewart (bstewart at iname.com)
 
   This program is free software: you can redistribute it and/or modify it under
   the terms of the GNU General Public License as published by the Free Software
@@ -40,12 +40,12 @@ const
 
 type
   TProcessorArchitecture = (
-    ProcessorArchitectureX86         = PROCESSOR_ARCHITECTURE_INTEL,
-    ProcessorArchitectureARM         = PROCESSOR_ARCHITECTURE_ARM,
-    ProcessorArchitectureIA64        = PROCESSOR_ARCHITECTURE_IA64,
-    ProcessorArchitectureAMD64       = PROCESSOR_ARCHITECTURE_AMD64,
-    ProcessorArchitectureARM64       = PROCESSOR_ARCHITECTURE_ARM64,
-    ProcessorArchitectureUnknown     = PROCESSOR_ARCHITECTURE_UNKNOWN);
+    ProcessorArchitectureX86      = PROCESSOR_ARCHITECTURE_INTEL,
+    ProcessorArchitectureARM      = PROCESSOR_ARCHITECTURE_ARM,
+    ProcessorArchitectureIA64     = PROCESSOR_ARCHITECTURE_IA64,
+    ProcessorArchitectureAMD64    = PROCESSOR_ARCHITECTURE_AMD64,
+    ProcessorArchitectureARM64    = PROCESSOR_ARCHITECTURE_ARM64,
+    ProcessorArchitectureUnknown  = PROCESSOR_ARCHITECTURE_UNKNOWN);
   TProductType = (
     ProductTypeWorkstation = VER_NT_WORKSTATION,
     ProductTypeServer      = VER_NT_SERVER);
@@ -67,17 +67,13 @@ type
 
 function GetWindowsOSInfo(var OSI: TWindowsOSInfo): DWORD;
 
-function TestVersionString(const S: string): Boolean;
-
-function CompareVersionStrings(const V1, V2: string): Integer;
-
 function GetFileVersion(const FileName: string): string;
 
 implementation
 
 uses
   TextUtil,
-  WindowsRegistry;
+  WindowsRegistry;  // https://github.com/Bill-Stewart/WindowsRegistry
 
 const
   STATUS_SUCCESS = 0;
@@ -96,8 +92,6 @@ type
     wProductType:        UCHAR;
     wReserved:           UCHAR;
   end;
-  TStringArray = array of string;
-  TVersionArray = array[0..1] of Word;
 
 // GetVersionEx is good enough to check if Windows Vista/Server 2008 or newer
 function IsWindowsNewEnough(): Boolean;
@@ -110,88 +104,9 @@ begin
     result := (OVI.dwPlatformId = VER_PLATFORM_WIN32_NT) and (OVI.dwMajorVersion >= 6);
 end;
 
-function DWORDToStr(const N: DWORD): string;
+function IntToStr(const I: Integer): string;
 begin
-  Str(N, result);
-end;
-
-function StrToInt(const S: string; var I: Integer): Boolean;
-var
-  Code: Word;
-begin
-  Val(S, I, Code);
-  result := Code = 0;
-end;
-
-function StrToWord(const S: string; var W: Word): Boolean;
-var
-  Code: Word;
-begin
-  Val(S, W, Code);
-  result := Code = 0;
-end;
-
-function GetVersionArray(const S: string; var Version: TVersionArray): Boolean;
-var
-  A: TStringArray;
-  ALen, I, Part: Integer;
-begin
-  result := false;
-  StrSplit(S, '.', A);
-  ALen := Length(A);
-  if ALen > 2 then
-    exit;
-  if ALen = 1 then
-  begin
-    SetLength(A, 2);
-    A[1] := '0';
-  end;
-  for I := 0 to Length(A) - 1 do
-  begin
-    result := StrToInt(A[I], Part);
-    if not result then
-      break;
-    result := (Part >= 0) and (Part <= $FFFF);
-    if not result then
-      break;
-    result := StrToWord(A[I], Version[I]);
-    if not result then
-      break;
-  end;
-end;
-
-function TestVersionString(const S: string): Boolean;
-var
-  Version: TVersionArray;
-begin
-  result := GetVersionArray(S, Version);
-end;
-
-// Should test version strings using TestVersionString before using this
-// to compare them
-function CompareVersionStrings(const V1, V2: string): Integer;
-var
-  Ver1, Ver2: TVersionArray;
-  I: Integer;
-begin
-  result := 0;
-  if not GetVersionArray(V1, Ver1) then
-    exit;
-  if not GetVersionArray(V2, Ver2) then
-    exit;
-  for I := 0 to 1 do
-  begin
-    if Ver1[I] > Ver2[I] then
-    begin
-      result := 1;
-      exit;
-    end
-    else if Ver1[I] < Ver2[I] then
-    begin
-      result := -1;
-      exit;
-    end;
-  end;
+  Str(I, result);
 end;
 
 function GetFileVersion(const FileName: string): string;
@@ -249,11 +164,11 @@ begin
   begin
     GetNativeSystemInfo(SI);
     case SI.wProcessorArchitecture of
-      PROCESSOR_ARCHITECTURE_INTEL:   Architecture := ProcessorArchitectureX86;
-      PROCESSOR_ARCHITECTURE_ARM:     Architecture := ProcessorArchitectureARM;
-      PROCESSOR_ARCHITECTURE_IA64:    Architecture := ProcessorArchitectureIA64;
-      PROCESSOR_ARCHITECTURE_AMD64:   Architecture := ProcessorArchitectureAMD64;
-      PROCESSOR_ARCHITECTURE_ARM64:   Architecture := ProcessorArchitectureARM64;
+      PROCESSOR_ARCHITECTURE_INTEL: Architecture := ProcessorArchitectureX86;
+      PROCESSOR_ARCHITECTURE_ARM:   Architecture := ProcessorArchitectureARM;
+      PROCESSOR_ARCHITECTURE_IA64:  Architecture := ProcessorArchitectureIA64;
+      PROCESSOR_ARCHITECTURE_AMD64: Architecture := ProcessorArchitectureAMD64;
+      PROCESSOR_ARCHITECTURE_ARM64: Architecture := ProcessorArchitectureARM64;
       else
         Architecture := ProcessorArchitectureUnknown;
     end;

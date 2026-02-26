@@ -60,7 +60,7 @@ The `--exact` option applies to the `--buildnumber`, `--buildrevision`, and `--v
 
 This section describes the various means by which **osinfo** retrieves information about the current system.
 
-* The CPU architecture (`--architecture`) is retrieved using the [**GetNativeSystemInformation**](https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getnativesysteminfo) Windows API function.
+* The CPU architecture (`--architecture`) is retrieved using the [**GetNativeSystemInfo**](https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getnativesysteminfo) Windows API function.
 
 * The following options' details are retrieved using the [**RtlGetVersion**](https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlgetversion) Windows API function:
 
@@ -136,7 +136,7 @@ Starting with Windows 10 and Server 2016, the version number changed to 10.0 and
 
        osinfo --rdsserver true
 
-5. Example batch (shell script) logon script code fragment to end script if running on a DC:
+5. Example shell script (batch file) logon script code fragment to end script if running on a DC:
 
        osinfo --domaincontroller true
        if %ERRORLEVEL% EQU 1 goto :EOF

@@ -1,6 +1,6 @@
 1 VERSIONINFO
-FILEVERSION 1,0,0,0
-PRODUCTVERSION 1,0,0,0
+FILEVERSION 1,1,0,0
+PRODUCTVERSION 1,1,0,0
 FILEOS 0x4
 FILETYPE 1
 {
@@ -10,12 +10,12 @@ FILETYPE 1
     {
       VALUE "CompanyName", "Bill Stewart (bstewart at iname.com)"
       VALUE "FileDescription", "osinfo.exe"
-      VALUE "FileVersion", "1.0.0.0"
+      VALUE "FileVersion", "1.1.0.0"
       VALUE "InternalName", "osinfo.exe"
       VALUE "LegalCopyright", "(C) 2024 by Bill Stewart (bstewart at iname.com)"
       VALUE "OriginalFilename", "osinfo.exe"
       VALUE "ProductName", "osinfo.exe"
-      VALUE "ProductVersion", "1.0.0.0"
+      VALUE "ProductVersion", "1.1.0.0"
     }
   }
 
@@ -27,3 +27,5 @@ FILETYPE 1
 
 APPICON ICON "osinfo.ico"
 MAINICON ICON "osinfo.ico"
+
+1 24 "osinfo.manifest"

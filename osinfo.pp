@@ -1,4 +1,4 @@
-{ Copyright (C) 2024 by Bill Stewart (bstewart at iname.com)
+{ Copyright (C) 2024-2026 by Bill Stewart (bstewart at iname.com)
 
   This program is free software: you can redistribute it and/or modify it under
   the terms of the GNU General Public License as published by the Free Software
@@ -21,18 +21,19 @@ program osinfo;
 {$MODESWITCH UNICODESTRINGS}
 {$R *.res}
 
-// wargcv and wgetopts: https://github.com/Bill-Stewart/wargcv
 uses
   windows,
-  wargcv,
-  wgetopts,
+  wargcv,           // https://github.com/Bill-Stewart/wargcv
+  wgetopts,         // https://github.com/Bill-Stewart/wargcv
   TextUtil,
-  WindowsMessages,
+  VersionStrings,   // https://github.com/Bill-Stewart/VersionStrings
+  WindowsMessages,  // https://github.com/Bill-Stewart/WindowsMessages
+  WindowsString,    // https://github.com/Bill-Stewart/WindowsString
   WindowsOSInfo;
 
 const
   PROGRAM_NAME = 'osinfo';
-  PROGRAM_COPYRIGHT = 'Copyright (C) 2024 by Bill Stewart';
+  PROGRAM_COPYRIGHT = 'Copyright (C) 2024-2026 by Bill Stewart';
 
 type
   TParamSet = (
@@ -122,9 +123,9 @@ end;
 function TCommandLine.GetBoolArg(const Arg: string; out Param: Boolean): DWORD;
 begin
   result := ERROR_SUCCESS;
-  if SameText(Arg, 'true') then
+  if SameString(Arg, 'true') then
     Param := true
-  else if SameText(arg, 'false') then
+  else if SameString(arg, 'false') then
     Param := false
   else
     result := ERROR_INVALID_PARAMETER;
@@ -262,7 +263,7 @@ begin
   ExactMatch := false;
   OptErr := false;
   repeat
-    Opt := GetLongOpts('a:b:hp:qv:', @Opts[1], I);
+    Opt := GetLongOpts('a:b:d:hp:qv:', @Opts[1], I);
     case Opt of
       'a':  // --architecture
       begin
@@ -286,6 +287,11 @@ begin
           Include(ParamSet, ParamSetBuildNumber)
         else
           Error := ERROR_INVALID_PARAMETER;
+      end;
+      'd':  // --displayversion
+      begin
+        DisplayVersion := OptArg;
+        Include(ParamSet, ParamSetDisplayVersion);
       end;
       'h':  // --help
       begin
@@ -326,11 +332,6 @@ begin
             Include(ParamSet, ParamSetBuildRevision)
           else
             Error := ERROR_INVALID_PARAMETER;
-        end;
-        'displayversion':
-        begin
-          DisplayVersion := OptArg;
-          Include(ParamSet, ParamSetDisplayVersion);
         end;
         'domaincontroller':
         begin
@@ -513,7 +514,7 @@ begin
   // --displayversion
   if ParamSetDisplayVersion in CmdLine.ParamSet then
   begin
-    if SameText(CmdLine.DisplayVersion, OSI.DisplayVersion) then
+    if SameString(CmdLine.DisplayVersion, OSI.DisplayVersion) then
       Include(MatchingParams, ParamSetDisplayVersion);
   end;
 
@@ -555,7 +556,7 @@ begin
   // --releaseid
   if ParamSetReleaseID in CmdLine.ParamSet then
   begin
-    if SameText(CmdLine.ReleaseID, OSI.ReleaseID) then
+    if SameString(CmdLine.ReleaseID, OSI.ReleaseID) then
       Include(MatchingParams, ParamSetReleaseID);
   end;
 
